@@ -59,6 +59,20 @@ module CreateReleaseNote
             # next current unless deploy_merges.any?
             f.puts "    #{prev.sub(@deploy_tag_regex, "")}:"
             deploy_merges.each {|commit| f.puts "      #{commit}"}
+
+            # show f/ commits too
+            develop_merges = `#{log_command} #{deploy_commits}`.split("\n").
+              grep(@feature_branch_regex).
+              map{|commit|
+              commit.sub(@feature_branch_regex){$1}}.
+              sort.uniq
+            if develop_merges.any?
+              f.puts "      from develop:"
+              texts = develop_merges.in_groups_of(7, false).map{|grouped|
+                "        #{grouped.join(", ")},"
+              }.join("\n")
+              f.puts texts.chop
+            end
             current
           end
         end
@@ -94,6 +108,8 @@ module CreateReleaseNote
                    when :front
                      <<-'ADDITION'
   others:
+    オペミス(develop -> releaseを6/7に誤実施・取り消し済)の為、実際には20130611133455にdeployされたUT修正が、
+    20130609134447の欄に載っている
 ADDITION
                    when :back
                      <<-'ADDITION'
