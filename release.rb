@@ -8,7 +8,7 @@ module UpdateReleaseBranchAndPush
     @release_branch = "release"
     @release_tag_prefix = "CT_VER"
     @release_tag_message_prefix = "ct release"
-    @repos = [:front, :back, :batch]
+    @repos = [:front, :back, :batch, :lws_framework]
   end
 
   def self.execute
@@ -36,6 +36,8 @@ module UpdateReleaseBranchAndPush
       run_command("cd #{d} && git flow release finish -m'#{tag_message}' #{tag_name}")
       # push release
       # run_command("cd #{d} && git push origin #{@release_branch}")
+      # push develop
+      # run_command("cd #{d} && git push origin develop")
       # push tag
       # run_command("cd #{d} && git push --tags")
     end

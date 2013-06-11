@@ -16,7 +16,7 @@ module CreateReleaseNote
     @release_tag_regex = %r{^CT_VER}
     @hotfix_branch_regex = %r{.*Merge branch 'h/(.*?)' into #{@release_branch}}
     @feature_branch_regex = %r{.*Merge branch 'f/(.*?)' into #{@develop_branch}}
-    @repos = [:front, :back, :batch]
+    @repos = [:front, :back, :batch, :lws_framework]
   end
 
   def self.execute
@@ -24,6 +24,7 @@ module CreateReleaseNote
     File.open(@out, "w") do |f|
       @repos.each do |repo|
         d = File.expand_path(repo.to_s, @wd)
+        initial_tag = repo == :lws_framework ? "1.0.9" : "C_201305151645"
         unless `cd #{d} && git status`.match("working directory clean")
           raise "#{d} not clean, no pull this time"
         end
@@ -35,9 +36,9 @@ module CreateReleaseNote
 
         tags = `cd #{d} && git tag -l`.split("\n")
         deploy_tags = tags.grep(@deploy_tag_regex).sort.reverse.
-          unshift("HEAD").push("C_201305151645")
+          unshift("HEAD").push(initial_tag)
         release_tags = tags.grep(@release_tag_regex).sort.reverse.
-          unshift("HEAD").push("C_201305151645")
+          unshift("HEAD").push(initial_tag)
         log_command = "cd #{d} && git log --oneline --merges"
 
         # release note for release per deploy (/h merges on prev_tag..current_tag)
