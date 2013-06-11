@@ -11,7 +11,8 @@ module MergeDevelopToBranches
         "f/html",
         "f/spfp",
         "f/encrypt",
-        "f/SBITITR001"
+        "f/SBITITR001",
+        "f/OrderPages"
       ],
       :back => [
         "f/html",
