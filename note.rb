@@ -48,7 +48,7 @@ module CreateReleaseNote
           # update release
           run_command("cd #{d} && git merge origin/#{@release_branch}")
 
-          f.puts "  release merges:"
+          f.puts "  releases:"
           deploy_tags.reduce do |prev, current|
             deploy_commits = "#{current}..#{prev}"
             deploy_merges = `#{log_command} #{deploy_commits}`.split("\n").
@@ -67,7 +67,7 @@ module CreateReleaseNote
               commit.sub(@feature_branch_regex){$1}}.
               sort.uniq
             if develop_merges.any?
-              f.puts "      from develop:"
+              f.puts "      merged from develop:"
               texts = develop_merges.in_groups_of(7, false).map{|grouped|
                 "        #{grouped.join(", ")},"
               }.join("\n")
@@ -78,38 +78,39 @@ module CreateReleaseNote
         end
 
         # release note for develop per release (/f merges on prev_tag..current_tag)
-        if release_tags.any?
-          # co develop
-          run_command("cd #{d} && git checkout #{@develop_branch}")
-          # update develop
-          run_command("cd #{d} && git merge origin/#{@develop_branch}")
+        # if release_tags.any?
+        #   # co develop
+        #   run_command("cd #{d} && git checkout #{@develop_branch}")
+        #   # update develop
+        #   run_command("cd #{d} && git merge origin/#{@develop_branch}")
 
-          f.puts "  develop merges:"
-          release_tags.reduce do |prev, current|
-            develop_commits = "#{current}..#{prev}"
-            develop_merges = `#{log_command} #{develop_commits}`.split("\n").
-              grep(@feature_branch_regex).
-              map{|commit|
-              commit.sub(@feature_branch_regex){$1}}.
-              sort.uniq
-            # next current unless develop_merges.any?
-            f.puts "    #{prev.sub(@release_tag_regex, "")}:"
-            texts = develop_merges.in_groups_of(7, false).map{|grouped|
-              "      #{grouped.join(", ")},"
-            }.join("\n")
+        #   f.puts "  versions:"
+        #   release_tags.reduce do |prev, current|
+        #     develop_commits = "#{current}..#{prev}"
+        #     develop_merges = `#{log_command} #{develop_commits}`.split("\n").
+        #       grep(@feature_branch_regex).
+        #       map{|commit|
+        #       commit.sub(@feature_branch_regex){$1}}.
+        #       sort.uniq
+        #     # next current unless develop_merges.any?
+        #     f.puts "    #{prev.sub(@release_tag_regex, "")}:"
+        #     texts = develop_merges.in_groups_of(7, false).map{|grouped|
+        #       "      #{grouped.join(", ")},"
+        #     }.join("\n")
 
-            f.puts texts.chop
-            current
-          end
-        end
+        #     f.puts texts.chop
+        #     current
+        #   end
+        # end
 
         # additonal notes by man power!
         addition = case repo
                    when :front
                      <<-'ADDITION'
   others:
-    オペミス(develop -> releaseを6/7に誤実施・取り消し済)の為、実際には20130611133455にdeployされたUT修正が、
-    20130609134447の欄に載っている
+    オペミス(develop -> releaseを6/7に誤実施・取り消し済)の為、
+    実際には20130611133455にdeployされたUT修正が
+      20130609134447の欄に載っている
 ADDITION
                    when :back
                      <<-'ADDITION'
