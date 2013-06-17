@@ -24,7 +24,8 @@ module MergeDevelopToBranches
         "f/SBSMCTM025"
       ],
       :batch => [
-        "f/encrypt"
+        "f/encrypt",
+        "f/new_batch_201306"
       ]
     }
   end
