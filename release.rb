@@ -30,6 +30,10 @@ module UpdateReleaseBranchAndPush
       run_command("cd #{d} && git checkout develop")
       # update develop
       run_command("cd #{d} && git merge origin/develop")
+      # co release
+      run_command("cd #{d} && git checkout #{@release_branch}")
+      # update release
+      run_command("cd #{d} && git merge origin/#{@release_branch}")
       # git flow release start
       run_command("cd #{d} && git flow release start #{tag_name}")
       # git flow release finish
