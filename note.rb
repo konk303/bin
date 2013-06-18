@@ -78,30 +78,30 @@ module CreateReleaseNote
         end
 
         # release note for develop per release (/f merges on prev_tag..current_tag)
-        # if release_tags.any?
-        #   # co develop
-        #   run_command("cd #{d} && git checkout #{@develop_branch}")
-        #   # update develop
-        #   run_command("cd #{d} && git merge origin/#{@develop_branch}")
+        if release_tags.any?
+          # co develop
+          run_command("cd #{d} && git checkout #{@develop_branch}")
+          # update develop
+          run_command("cd #{d} && git merge origin/#{@develop_branch}")
 
-        #   f.puts "  versions:"
-        #   release_tags.reduce do |prev, current|
-        #     develop_commits = "#{current}..#{prev}"
-        #     develop_merges = `#{log_command} #{develop_commits}`.split("\n").
-        #       grep(@feature_branch_regex).
-        #       map{|commit|
-        #       commit.sub(@feature_branch_regex){$1}}.
-        #       sort.uniq
-        #     # next current unless develop_merges.any?
-        #     f.puts "    #{prev.sub(@release_tag_regex, "")}:"
-        #     texts = develop_merges.in_groups_of(7, false).map{|grouped|
-        #       "      #{grouped.join(", ")},"
-        #     }.join("\n")
+          f.puts "  versions:"
+          release_tags.reduce do |prev, current|
+            develop_commits = "#{current}..#{prev}"
+            develop_merges = `#{log_command} #{develop_commits}`.split("\n").
+              grep(@feature_branch_regex).
+              map{|commit|
+              commit.sub(@feature_branch_regex){$1}}.
+              sort.uniq
+            # next current unless develop_merges.any?
+            f.puts "    #{prev.sub(@release_tag_regex, "")}:"
+            texts = develop_merges.in_groups_of(7, false).map{|grouped|
+              "      #{grouped.join(", ")},"
+            }.join("\n")
 
-        #     f.puts texts.chop
-        #     current
-        #   end
-        # end
+            f.puts texts.chop
+            current
+          end
+        end
 
         # additonal notes by man power!
         addition = case repo
