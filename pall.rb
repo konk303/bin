@@ -14,10 +14,10 @@ Dir.glob("#{Dir.home}/work/*").each do |directory|
     command = "cd #{d} && git co release && git pull"
     puts "execute: #{command}"
     system command
-    command = "cd #{d} && git co f/encrypt && git merge origin/f/encrypt"
+    command = "cd #{d} && git co develop && git merge origin/develop"
     puts "execute: #{command}"
     system command
-    command = "cd #{d} && git co develop && git merge origin/develop"
+    command = "cd #{d} && git co f/encrypt && git merge origin/f/encrypt"
     puts "execute: #{command}"
     system command
   end
