@@ -9,18 +9,13 @@ module MergeDevelopToBranches
     @update_branches = {
       :front => [
         "f/html",
-        "f/spfp",
+        # "f/spfp",
         "f/encrypt",
-        "f/OrderPages"
+        # "f/OrderPages"
       ],
       :back => [
         "f/html",
         "f/encrypt",
-        # "f/SBITITR001",
-        # "f/SBSMCTM006",
-        # "f/SBSMCTM007",
-        # "f/SBSMCTM009",
-        # "f/SBSMCTM012",
         "f/SBSMCTM025"
       ],
       :batch => [
