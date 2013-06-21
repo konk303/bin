@@ -33,7 +33,7 @@ module RewriteCss
       # replaced = texts
       # replaced = texts.gsub(%r{url\("/(.*?)"\)}) {"image-url(\"#{$1}\")"}
       # replaced = texts.gsub(%r{url\(/(.*?)\)}) {"image-url(\"#{$1}\")"}
-      replaced = texts.gsub(%r{url\("/img/(.*?)"\)}) {"image-url(\"#{$1}\")"}
+      replaced = texts.gsub(%r{url\("/img/(.*?)"\)}) {"image-url(\"pc/#{$1}\")"}
       File.open("#{file}", "w") {|f| f.puts replaced}
     end
     puts "finished"
