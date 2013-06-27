@@ -8,15 +8,15 @@ module MergeDevelopToBranches
     @merge_from = "develop"
     @update_branches = {
       :front => [
-        "f/html",
-        # "f/spfp",
         "f/encrypt",
-        # "f/OrderPages"
+        "f/SP_C_ItemSearch",
       ],
       :back => [
-        "f/html",
         "f/encrypt",
-        "f/SBSMCTM025"
+        "f/SBSMCTM025",
+        "f/SBSMCTM026",
+        "f/SBSMCTM028",
+        "f/back_OrderPages2",
       ],
       :batch => [
         "f/encrypt",
