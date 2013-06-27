@@ -11,7 +11,7 @@ Dir.glob("#{Dir.home}/work/*").each do |directory|
     next
   end
   threads << Thread.start(directory) do |d|
-    command = "cd #{d} && git co release && git pull"
+    command = "cd #{d} && git co release && git pull -p"
     puts "execute: #{command}"
     system command
     command = "cd #{d} && git co develop && git merge origin/develop"

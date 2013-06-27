@@ -19,7 +19,7 @@ module PruneRemoteBranches
       end
 
       # fetch
-      run_command("cd #{d} && git fetch")
+      run_command("cd #{d} && git fetch --prune")
       # find branches that already merged to release
       deletes = `cd #{d} && git branch -r --merged origin/release`.split("\n").
         grep(%r{^\s*origin/[hf]/}).map{|b| b.sub(%r{^\s*origin/}, "")}
@@ -29,10 +29,10 @@ module PruneRemoteBranches
         run_command("cd #{d} && git push origin :#{branch}")
       end
       # fetch again and gc
-      run_command("cd #{d} && git fetch")
+      run_command("cd #{d} && git fetch --prune")
       run_command("cd #{d} && git gc")
       # also gc work/
-      run_command("cd ~/work/#{repo} && git fetch")
+      run_command("cd ~/work/#{repo} && git fetch --prune")
       run_command("cd ~/work/#{repo} && git gc")
     end
   end
