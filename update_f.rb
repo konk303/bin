@@ -9,18 +9,12 @@ module MergeDevelopToBranches
     @update_branches = {
       :front => [
         "f/encrypt",
-        "f/SP_C_ItemSearch",
       ],
       :back => [
         "f/encrypt",
-        "f/SBSMCTM025",
-        "f/SBSMCTM026",
-        "f/SBSMCTM028",
-        "f/back_OrderPages2",
       ],
       :batch => [
         "f/encrypt",
-        "f/new_batch_201306"
       ]
     }
   end
