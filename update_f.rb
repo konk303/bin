@@ -5,13 +5,13 @@
 module MergeDevelopToBranches
   def self.initialize
     @wd = "#{Dir.home}/tmp/git"
-    @merge_from = "develop"
     @update_branches = {
       :front => [
         "f/encrypt",
       ],
       :back => [
         "f/encrypt",
+        "h/CT_#7984",
       ],
       :batch => [
         "f/encrypt",
@@ -33,16 +33,21 @@ module MergeDevelopToBranches
       # fetch
       run_command("cd #{d} && git fetch")
       # co develop
-      run_command("cd #{d} && git checkout #{@merge_from}")
+      run_command("cd #{d} && git checkout develop")
       # update develop
-      run_command("cd #{d} && git merge origin/#{@merge_from}")
+      run_command("cd #{d} && git merge origin/develop")
+      # co release
+      run_command("cd #{d} && git checkout release")
+      # update release
+      run_command("cd #{d} && git merge origin/release")
       branches.each do |branch|
+        merge_from = branch.match(%r{^f/}) ? :develop : :release
         # co branch
         run_command("cd #{d} && git checkout #{branch}")
         # update branch
         run_command("cd #{d} && git merge origin/#{branch}")
-        # merge develop
-        run_command("cd #{d} && git merge --no-ff #{@merge_from}")
+        # merge
+        run_command("cd #{d} && git merge --no-ff #{merge_from}")
         # push branch
         run_command("cd #{d} && git push origin #{branch}")
       end
