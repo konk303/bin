@@ -57,21 +57,18 @@ module ListOldBranches
           `cd #{d} && git show -s --pretty=format:"%cn || %ci || %s" #{branch.hash}`.
           chomp.split(" || ")
         branch.time = Time.parse(branch.time)
-        issue_id = branch.name.match(%r{#(\d*)}).try(:[], 1)
-        begin
-          raise unless issue_id
-          issue = Issue.find(issue_id, :params => {:key => RedmineConfig::API_KEY})
+        if !(branch.name.include? "TBD") &&
+            (issue_id = branch.name.match(%r{#(\d*)}).try(:[], 1)) &&
+            (issue = Issue.find(issue_id, :params => {:key => RedmineConfig::API_KEY}))
           branch.has_ticket = true
           branch.url = "#{RedmineConfig::SITE}issues/#{issue_id}"
           branch.status = issue.status.name
           branch.subject = issue.subject
           branch.updated_at = issue.updated_on
-        rescue
-          nil
         end
       end
 
-      # select older than 2 weeks
+      # select older than 10 days
       not_mergeds.select!{|branch| branch.time < 10.days.ago}
 
       # counts per person
