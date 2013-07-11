@@ -18,8 +18,8 @@ module ListOldBranches
     @wd = "#{Dir.home}/tmp/git"
     @out = "#{Dir.home}/work/release_note.txt"
     @repos = [:front, :back, :batch, :lws_framework]
-    @branch_class = Struct.new :hash, :name, :committer, :time, :message, :has_ticket, :url, :status, :subject, :updated_at
-    @committer_class = Struct.new :committer, :count
+    @branch_class = Struct.new :hash, :name, :committer, :time, :message, :has_ticket, :url, :status, :subject, :updated_at, :extra_message
+    @committer_class = Struct.new :committer, :count, :extra_messages
     @committers = []
   end
 
@@ -42,6 +42,11 @@ module ListOldBranches
       remotes = `cd #{d} && git ls-remote -h origin`.split("\n").map{|s|
         @branch_class.new(*s.split("\t")).tap{|o|
           o.name.sub!(%r{^refs/heads/}, "")
+          # extra_message
+          o.extra_message = case o.name
+                            when "f/TBD_#880"
+                              " トランザクションを分ける処理がうまく動作せず、(牧)に調査を依頼中"
+                            end
         }
       }
       # find branches that not yet merged to release
@@ -75,13 +80,14 @@ module ListOldBranches
       not_mergeds.each do |commit|
         committer =
           @committers.detect {|c| c.committer == commit.committer} ||
-          @committer_class.new(commit.committer, 0).tap{|new_c| @committers << new_c}
+          @committer_class.new(commit.committer, 0, []).tap{|new_c| @committers << new_c}
         committer.count += 1
+        committer.extra_messages << commit.extra_message
       end
 
       # list'em on note
       not_mergeds.sort_by(&:time).each do |branch|
-        buffer << "  #{branch.name}:"
+        buffer << "  #{branch.name}:#{branch.extra_message}"
         buffer << "    #{branch.committer} (#{branch.message})"
         buffer << "      #{branch.time} - #{branch.hash}"
         if branch.has_ticket
@@ -94,6 +100,9 @@ module ListOldBranches
     # committer list on top
     buffer.unshift ""
     @committers.sort_by(&:count).each do |c|
+      if (extra_messages = c.extra_messages.compact.uniq).any?
+        extra_messages.each {|m| buffer.unshift "    *#{m}"}
+      end
       buffer.unshift "  #{c.committer} => #{c.count} branch#{c.count >= 2 ? "es" : "" }"
     end
     buffer.unshift "by name:"
