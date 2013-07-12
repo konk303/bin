@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 require 'pry'
-require 'active_support/core_ext'
 
 # = merge commitのログからnoteを作成
 # （可能ならrelease branchを触る時に入れ込みたい）
@@ -12,13 +11,13 @@ module CreateReleaseNote
   class << self
     def execute(env)
       @wd = "#{Dir.home}/tmp/git"
-      targets = parse_argv(env)
       out = "#{Dir.home}/work/release_note.txt"
+      targets = parse_argv(env)
 
       @repos = [:front, :back, :batch, :lws_framework]
       update_repos targets
 
-      File.open(out, "w") do |f|
+       File.open(out, "w") do |f|
         targets.each do |target|
           f.puts "#{target.name}:"
           write_out_note target, f
@@ -49,15 +48,13 @@ module CreateReleaseNote
 
     def update_repos(targets)
       @repos.each do |repo|
-        initial_tag = repo == :lws_framework ? "1.0.9" : "C_201305151645"
-        d = File.expand_path(repo.to_s, @wd)
+        d = directory(repo)
         # fetch
         run_command("cd #{d} && git fetch --prune")
         tags = `cd #{d} && git tag -l`.split("\n")
         targets.each do |target|
           target.tags ||= {}
-          target.tags[repo] = tags.grep(target.tag_regexp).sort.reverse.
-            unshift("HEAD").push(initial_tag).take(10)
+          target.tags[repo] = tags.grep(target.tag_regexp).sort.reverse.take(10)
         end
       end
     end
@@ -66,20 +63,19 @@ module CreateReleaseNote
       branch_regexp = %r{Merge branch 'h/.*?' into #{target.release_branch}|Merge branch 'f/.*?' into develop}
       @repos.each do |repo|
         file.puts "  #{repo}:"
-        d = File.expand_path(repo.to_s, @wd)
+        d = directory(repo)
         log_command = "cd #{d} && git log --oneline --merges"
 
-        target.tags[repo].reduce do |prev, current|
-          range_command = "#{current}..#{prev}"
-          merges = `#{log_command} #{range_command}`.split("\n").
+        target.tags[repo].reduce("HEAD") do |newer, current|
+          range = "#{current}..#{newer}"
+          merges = `#{log_command} #{range}`.split("\n").
             grep(branch_regexp){|commit| commit.sub(%r{.*Merge branch '[fh]/(.*?)'.*}){$1}}.
-            sort.uniq
-          priorities = merges.select{|merge| target.priority_branch_prefix && merge =~ /^#{target.priority_branch_prefix}/}
-          others = merges - priorities
-          file.puts "    #{prev.sub(target.tag_regexp, "")}:"
+            uniq.sort
+          priorities, others = merges.partition{|merge| target.priority_branch_prefix && merge =~ /^#{target.priority_branch_prefix}/}
+          file.puts "    #{newer.sub(target.tag_regexp, "")}:"
           priorities.each {|commit| file.puts "      #{commit}"}
-          texts = others.in_groups_of(7, false).map{|grouped|
-                "        #{grouped.join(", ")},"
+          texts = others.each_slice(7){|grouped|
+            "        #{grouped.join(", ")},"
           }.join("\n")
           file.puts texts.chop
 
@@ -90,19 +86,19 @@ module CreateReleaseNote
         addition = case repo
                    when :front
                      <<-'ADDITION'
-  others:
+    others:
 ADDITION
                    when :back
                      <<-'ADDITION'
-  others:
+    others:
 ADDITION
                    when :batch
                      <<-'ADDITION'
-  others:
+    others:
 ADDITION
                    when :lws_framework
                      <<-'ADDITION'
-  others:
+    others:
 ADDITION
                    end
         file.puts addition
@@ -113,6 +109,10 @@ ADDITION
     def run_command(command)
       puts "execute: #{command}"
       raise unless system(command)
+    end
+
+    def directory(repo)
+      File.expand_path(repo.to_s, @wd)
     end
   end
 end
