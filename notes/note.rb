@@ -66,7 +66,7 @@ module CreateReleaseNote
         d = directory(repo)
         log_command = "cd #{d} && git log --oneline --merges"
 
-        target.tags[repo].reduce("HEAD") do |newer, current|
+        target.tags[repo].reduce("origin/#{target.release_branch}") do |newer, current|
           range = "#{current}..#{newer}"
           merges = `#{log_command} #{range}`.split("\n").
             grep(branch_regexp){|commit| commit.sub(%r{.*Merge branch '[fh]/(.*?)'.*}){$1}}.
