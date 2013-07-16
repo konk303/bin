@@ -11,7 +11,6 @@ module MergeDevelopToBranches
       ],
       :back => [
         "f/encrypt",
-        "h/CT_#7984",
       ],
       :batch => [
         "f/encrypt",
