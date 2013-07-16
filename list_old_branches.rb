@@ -75,6 +75,8 @@ module ListOldBranches
 
       # select older than 10 days
       not_mergeds.select!{|branch| branch.time < 10.days.ago}
+      # select only finished ones
+      # not_mergeds.select!{|branch| branch.status == "終了"}
 
       # counts per person
       not_mergeds.each do |commit|
