@@ -17,7 +17,7 @@ module CreateReleaseNote
       @repos = [:front, :back, :batch, :lws_framework]
       update_repos targets
 
-       File.open(out, "w") do |f|
+      File.open(out, "w") do |f|
         targets.each do |target|
           f.puts "#{target.name}:"
           write_out_note target, f
@@ -74,7 +74,7 @@ module CreateReleaseNote
           priorities, others = merges.partition{|merge| target.priority_branch_prefix && merge =~ /^#{target.priority_branch_prefix}/}
           file.puts "    #{newer.sub(target.tag_regexp, "")}:"
           priorities.each {|commit| file.puts "      #{commit}"}
-          texts = others.each_slice(7){|grouped|
+          texts = others.each_slice(7).map{|grouped|
             "        #{grouped.join(", ")},"
           }.join("\n")
           file.puts texts.chop
