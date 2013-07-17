@@ -7,13 +7,13 @@ module MergeDevelopToBranches
     @wd = "#{Dir.home}/tmp/git"
     @update_branches = {
       :front => [
-        "f/encrypt",
+        # "f/encrypt",
       ],
       :back => [
-        "f/encrypt",
+        # "f/encrypt",
       ],
       :batch => [
-        "f/encrypt",
+        # "f/encrypt",
       ]
     }
   end
