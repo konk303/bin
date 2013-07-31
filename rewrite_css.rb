@@ -6,20 +6,20 @@ require 'pry'
 # == cssのurlをimage-url書き換えてファイル名をscss化
 module RewriteCss
   def self.initialize(file_name_prefixes = [])
-    base_dir = "#{Dir.home}/work/front/app/assets/stylesheets/"
+    # base_dir = "#{Dir.home}/work/front/app/assets/stylesheets/"
     # base_dir = "#{Dir.home}/work/front/app/assets/stylesheets/smart_phone"
     # base_dir = "#{Dir.home}/work/front/app/assets/stylesheets/mobile"
 
     # base_dir = "#{Dir.home}/work/front/app/assets/javascripts"
-    # base_dir = "#{Dir.home}/work/front/app/assets/javascripts/smart_phone"
+    base_dir = "#{Dir.home}/work/front/app/assets/javascripts/smart_phone"
     # base_dir = "#{Dir.home}/work/front/vendor/assets/stylesheets/fancybox"
     @files = [].tap do |files|
       [
-        "basic.css.scss",
-        "common.css.scss",
-        "shop.css.scss",
-        "top.css.scss",
-        # "common.js.erb"
+        # "basic.css.scss",
+        # "common.css.scss",
+        # "shop.css.scss",
+        # "top.css.scss",
+        "common.js.erb"
         # "jquery.fancybox.css",
         # "helpers/jquery.fancybox-buttons.css"
       ].each{|css| files << File.expand_path(css, base_dir)}
@@ -36,8 +36,10 @@ module RewriteCss
     puts "starting"
     @files.each do |file|
       texts = File.read(file)
+      # crlf
+      # replaced = texts.gsub(%r{\r\n}) {"\n"}
       # pc/css
-      replaced = texts.gsub(%r{url\("/img/(.*?)"\)}) {"image-url(\"pc/#{$1}\")"}
+      # replaced = texts.gsub(%r{url\("/img/(.*?)"\)}) {"image-url(\"pc/#{$1}\")"}
       # sp/css
       # replaced = texts.gsub(%r{url\(/(.*?)\)}) {"image-url(\"#{$1}\")"}
       # fp/css
@@ -45,7 +47,7 @@ module RewriteCss
       # pc/js
       # replaced = texts.gsub(%r{/img/(.*?)\.(jpeg|jpg|gif|png|bmp)}) {"<%= asset_path(\"pc/#{$1}.#{$2}\") %>"}
       # sp/js
-      # replaced = texts.gsub(%r{/(sp/images/.*?\.(jpeg|jpg|gif|png|bmp))}) {"<%= asset_path(\"#{$1}\") %>"}
+      replaced = texts.gsub(%r{/(sp/images/.*?\.(jpeg|jpg|gif|png|bmp))}) {"<%= asset_path(\"#{$1}\") %>"}
       # fancybox
       # replaced = texts.gsub(%r{url\('(.*?)'\)}) {"image-url(\"sp/fancybox/#{$1}\")"}
       File.open("#{file}", "w") {|f| f.puts replaced}
