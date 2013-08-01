@@ -44,8 +44,8 @@ module ListOldBranches
           o.name.sub!(%r{^refs/heads/}, "")
           # extra_message
           o.extra_message = case o.name
-                            when "f/TBD_#880"
-                              " トランザクションを分ける処理がうまく動作せず、(牧)に調査を依頼中"
+                            when "h/QP_#8601"
+                              " js性能関連。「とりあえず揉みなおし」でチケット終了。戻ってくる可能性あり。"
                             end
         }
       }
