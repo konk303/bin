@@ -41,12 +41,12 @@ module CreateReleaseNote
       end
       # CTIT
       if ["ctit", "CTIT"].include? env
-        targets << Env.new("CTIT releases", "with_redis", %r{^CTIT_DEPLOY})
+        targets << Env.new("CTIT releases", "develop", %r{^CTIT_DEPLOY})
       end
       # else (develop)
       if targets.empty?
         targets << Env.new("ST releases", "develop", %r{^ST_DEPLOY}, "ST")
-        targets << Env.new("CTIT releases", "with_redis", %r{^CTIT_DEPLOY})
+        targets << Env.new("CTIT releases", "develop", %r{^CTIT_DEPLOY})
         targets << Env.new("CT releases", "release", %r{^CT_DEPLOY}, "CT")
         targets << Env.new("versions", "develop", %r{^CT_VER})
       end
