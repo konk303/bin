@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 
-# = originから、releaseにマージ済みのbranchを削除
+# = originから、masterにマージ済みのbranchを削除
 module PruneRemoteBranches
   def self.initialize
     @wd = "#{Dir.home}/tmp/git"
@@ -20,10 +20,10 @@ module PruneRemoteBranches
 
       # fetch
       run_command("cd #{d} && git fetch --prune")
-      # find hotfix branches that already merged to release
-      deletes = `cd #{d} && git branch -r --merged origin/release`.split("\n").
+      # find hotfix branches that already merged to master
+      deletes = `cd #{d} && git branch -r --merged origin/master`.split("\n").
         grep(%r{^\s*origin/h/}).map{|b| b.sub(%r{^\s*origin/}, "")}
-      # find feature branches that already merged to release
+      # find feature branches that already merged to develop
       deletes |= `cd #{d} && git branch -r --merged origin/develop`.split("\n").
         grep(%r{^\s*origin/f/}).map{|b| b.sub(%r{^\s*origin/}, "")}
       puts "  delete #{deletes.size} remote branches"

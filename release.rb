@@ -1,13 +1,13 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 
-# = release branchを作成してfinish(結果的にdevelop -> release のマージ)
+# = release branchを作成してfinish(結果的にdevelop -> master のマージ)
 module UpdateReleaseBranchAndPush
   def self.initialize
     @wd = "#{Dir.home}/tmp/git"
-    @release_branch = "release"
-    @release_tag_prefix = "CT_VER"
-    @release_tag_message_prefix = "ct release"
+    @release_branch = "master"
+    @release_tag_prefix = "ST_VER"
+    @release_tag_message_prefix = "st release"
     @repos = [:front, :back, :batch, :lws_framework]
   end
 
