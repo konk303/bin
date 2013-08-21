@@ -7,13 +7,16 @@ module MergeDevelopToBranches
     @wd = "#{Dir.home}/tmp/git"
     @update_branches = {
       :front => [
-        # "f/encrypt",
+        "sandbox",
       ],
       :back => [
-        # "f/encrypt",
+        "sandbox",
       ],
       :batch => [
-        # "f/encrypt",
+        "sandbox",
+      ],
+      :lws_framework => [
+        "sandbox",
       ]
     }
   end
@@ -35,12 +38,12 @@ module MergeDevelopToBranches
       run_command("cd #{d} && git checkout develop")
       # update develop
       run_command("cd #{d} && git merge origin/develop")
-      # co release
-      run_command("cd #{d} && git checkout release")
+      # co master
+      run_command("cd #{d} && git checkout master")
       # update release
-      run_command("cd #{d} && git merge origin/release")
+      run_command("cd #{d} && git merge origin/master")
       branches.each do |branch|
-        merge_from = branch.match(%r{^f/}) ? :develop : :release
+        merge_from = branch.match(%r{^h/}) ? :master : :develop
         # co branch
         run_command("cd #{d} && git checkout #{branch}")
         # update branch
