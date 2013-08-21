@@ -67,7 +67,7 @@ module CreateReleaseNote
     end
 
     def write_out_note(target, file)
-      branch_regexp = %r{Merge branch 'h/.*?' into #{target.release_branch}|Merge branch 'f/.*?' into develop}
+      branch_regexp = %r{Merge branch 'h/.*?'$|Merge branch 'h/.*?' into #{target.release_branch}|Merge branch 'f/.*?' into develop}
       @repos.each do |repo|
         file.puts "  #{repo}:"
         d = directory(repo)
