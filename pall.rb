@@ -2,22 +2,20 @@
 # -*- coding: utf-8 -*-
 
 # = work下のprojectをgit pull (cleanだった場合のみ)
+def run_command(command)
+  puts "execute: #{command}"
+  raise unless system(command)
+end
+
 threads = []
-Dir.glob("#{Dir.home}/work/*").each do |directory|
-  next unless File::ftype(directory) == "directory"
-  next unless File.exists? "#{directory}/.git"
+Dir.glob("#{Dir.home}/work/*/").select{|d| File.exists? "#{d}.git"}.each do |directory|
   unless `cd #{directory} && git status`.match("working directory clean")
     p "#{directory} not clean, no pull this time"
     next
   end
   threads << Thread.start(directory) do |d|
-    command = "cd #{d} && git checkout master && git pull -p"
-    puts "execute: #{command}"
-    system command
-    command = "cd #{d} && git checkout develop && git merge origin/develop"
-    puts "execute: #{command}"
-    system command
+    run_command "cd #{d} && git checkout master && git pull -p"
+    run_command "cd #{d} && git checkout develop && git merge origin/develop"
   end
 end
-
 threads.map(&:join)
