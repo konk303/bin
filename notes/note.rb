@@ -31,17 +31,17 @@ module CreateReleaseNote
 
     def parse_argv(env)
       targets = []
-      # ST
-      if ["st", "ST"].include? env
-        targets << Env.new("ST releases", "develop", %r{^ST_DEPLOY}, "ST")
-      end
       # CT
       if ["ct", "CT"].include? env
-        targets << Env.new("CT releases", "release", %r{^CT_DEPLOY}, "CT")
+        targets << Env.new("CT releases", "develop", %r{^CT_DEPLOY})
+      end
+      # ST
+      if ["st", "ST"].include? env
+        targets << Env.new("ST releases", "master", %r{^ST_DEPLOY}, "ST")
       end
       # CTIT
       if ["ctit", "CTIT"].include? env
-        targets << Env.new("CTIT releases", "develop", %r{^CTIT_DEPLOY})
+        targets << Env.new("CTIT releases", "master", %r{^CTIT_DEPLOY})
       end
       # OT
       if ["ot", "OT"].include? env
@@ -49,11 +49,11 @@ module CreateReleaseNote
       end
       # else (develop)
       if targets.empty?
-        targets << Env.new("ST releases", "develop", %r{^ST_DEPLOY}, "ST")
-        targets << Env.new("CT releases", "release", %r{^CT_DEPLOY}, "CT")
-        targets << Env.new("CTIT releases", "develop", %r{^CTIT_DEPLOY})
+        targets << Env.new("CT releases", "develop", %r{^CT_DEPLOY})
+        targets << Env.new("ST releases", "master", %r{^ST_DEPLOY}, "ST")
         targets << Env.new("OT releases", "master", %r{^OT_DEPLOY})
-        targets << Env.new("versions", "develop", %r{^CT_VER})
+        targets << Env.new("CTIT releases", "master", %r{^CTIT_DEPLOY})
+        targets << Env.new("versions", "develop", %r{^CT_VER|^ST_VER})
       end
       targets
     end
