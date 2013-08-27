@@ -14,8 +14,8 @@ Dir.glob("#{Dir.home}/work/*/").select{|d| File.exists? "#{d}.git"}.each do |dir
     next
   end
   threads << Thread.start(directory) do |d|
-    run_command "cd #{d} && git checkout master && git pull -p"
-    run_command "cd #{d} && git checkout develop && git merge origin/develop"
+    run_command "cd #{d} && git checkout develop && git pull -p"
+    run_command "cd #{d} && git checkout master && git merge origin/master"
   end
 end
 threads.map(&:join)
