@@ -3,7 +3,11 @@
 
 require 'pry'
 
-# == cssのurlをimage-url書き換えてファイル名をscss化
+# == css内のurlをimage-url化/js内のurlをasset_path化
+# === 実行対象({pc|sp|fp} x {js|css})ごとに3箇所の指定が必要
+# # base_dir
+# # @files (実施したいファイル名のみアンコメント)
+# # replaced
 module RewriteCss
   def self.initialize(file_name_prefixes = [])
     # base_dir = "#{Dir.home}/work/front/app/assets/stylesheets/"
@@ -17,6 +21,7 @@ module RewriteCss
       [
         # "basic.css.scss",
         # "common.css.scss",
+        # "common.css.scss.erb",
         # "shop.css.scss",
         # "top.css.scss",
         "common.js.erb"
@@ -43,7 +48,7 @@ module RewriteCss
       # sp/css
       # replaced = texts.gsub(%r{url\(/(.*?)\)}) {"image-url(\"#{$1}\")"}
       # fp/css
-      # replaced = texts.gsub(%r{url\("/(.*?)"\)}) {"image-url(\"#{$1}\")"}
+      # replaced = texts.gsub(%r{url\("/(.*?)"\)}) {"<%= gif = \"#{$1}\"; Rails.env.production? ? \"url(\\\"/cdn\#{Rails.application.config.assets.prefix}/\#{gif}\\\")\" : \"image-url(\\\"\#{gif}\\\")\" %>"}
       # pc/js
       # replaced = texts.gsub(%r{/img/(.*?)\.(jpeg|jpg|gif|png|bmp)}) {"<%= asset_path(\"pc/#{$1}.#{$2}\") %>"}
       # sp/js
