@@ -4,7 +4,9 @@
 require 'pry'
 
 # = merge commitのログからnoteを作成
-# （可能ならrelease branchを触る時に入れ込みたい）
+# == 概要
+# 引数から設定したtargetsそれぞれに対し、対象release_branch内の該当リリースタグ間にマージされた
+# 作業ブランチの一覧を出力する
 module CreateReleaseNote
   Env = Struct.new :name, :release_branch, :tag_regexp, :priority_branch_prefix, :tags
 
@@ -29,6 +31,14 @@ module CreateReleaseNote
 
     private
 
+    # == 引数から出力対象を決定する
+    # === 概要
+    # 配列targetsに構造体Envのインスタンスをしまう
+    # === Envの引数:
+    #  # name: 名前(タイトル欄のみに使用)
+    #  # release_branch: 差分取得対象ブランチ (develop/master/etc)
+    #  # tag_regexp: リリースタグ取得正規表現
+    #  # priority_branch_prefix: (オプション) 優先表示(1行に1ブランチ表示)するブランチのprefix
     def parse_argv(env)
       targets = []
       # CT
@@ -37,7 +47,7 @@ module CreateReleaseNote
       end
       # ST
       if ["st", "ST"].include? env
-        targets << Env.new("ST releases", "master", %r{^ST_DEPLOY}, "ST")
+        targets << Env.new("ST releases", "develop", %r{^ST_DEPLOY}, "ST")
       end
       # CTIT
       if ["ctit", "CTIT"].include? env
@@ -45,14 +55,14 @@ module CreateReleaseNote
       end
       # OT
       if ["ot", "OT"].include? env
-        targets << Env.new("OT releases", "master", %r{^OT_DEPLOY})
+        targets << Env.new("OT releases", "master", %r{^OT_DEPLOY}, "OT")
       end
-      # else (develop)
+      # else (develop) - 引数省略時
       if targets.empty?
+        targets << Env.new("OT releases", "master", %r{^OT_DEPLOY}, "OT")
+        targets << Env.new("ST releases", "develop", %r{^ST_DEPLOY}, "ST")
         targets << Env.new("CT releases", "develop", %r{^CT_DEPLOY})
-        targets << Env.new("ST releases", "master", %r{^ST_DEPLOY}, "ST")
-        targets << Env.new("OT releases", "master", %r{^OT_DEPLOY})
-        targets << Env.new("CTIT releases", "master", %r{^CTIT_DEPLOY})
+        # targets << Env.new("CTIT releases", "master", %r{^CTIT_DEPLOY})
         targets << Env.new("versions", "develop", %r{^CT_VER|^ST_VER})
       end
       targets
