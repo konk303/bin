@@ -82,7 +82,11 @@ module CreateReleaseNote
     end
 
     def write_out_note(target, file)
-      branch_regexp = %r{Merge branch 'h/.*?'$|Merge branch 'h/.*?' into #{target.release_branch}|Merge branch 'f/.*?' into develop}
+      branch_regexp = if target.release_branch == "master"
+                        %r{Merge branch 'h/.*?'$}
+                      else
+                        %r{Merge branch '[fh]/.*?' into #{target.release_branch}}
+                      end
       @repos.each do |repo|
         file.puts "  #{repo}:"
         d = directory(repo)
