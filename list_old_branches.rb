@@ -43,10 +43,10 @@ module ListOldBranches
         @branch_class.new(*s.split("\t")).tap{|o|
           o.name.sub!(%r{^refs/heads/}, "")
           # extra_message
-          o.extra_message = case o.name
-                            when "h/QP_#8601"
-                              " js性能関連。「とりあえず揉みなおし」でチケット終了。戻ってくる可能性あり。"
-                            end
+          # o.extra_message = case o.name
+                            # when "h/QP_#8601"
+                            #   " js性能関連。「とりあえず揉みなおし」でチケット終了。戻ってくる可能性あり。"
+                            # end
         }
       }
       # find branches that not yet merged to develop
@@ -76,7 +76,7 @@ module ListOldBranches
       # select older than 10 days
       not_mergeds.select!{|branch| branch.time < 10.days.ago}
       # select only finished ones
-      # not_mergeds.select!{|branch| branch.status == "終了"}
+      not_mergeds.select!{|branch| branch.status == "終了"}
 
       # counts per person
       not_mergeds.each do |commit|
