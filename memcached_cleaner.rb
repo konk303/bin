@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 require 'net/telnet'
-require 'pry'
+# require 'pry'
 
 module MemcachedCleaner
   HOST = "localhost"
@@ -13,7 +13,7 @@ module MemcachedCleaner
     def clean
       begin
         puts "sending `flush_all` to #{HOST}:#{PORT}"
-        client = Net::Telnet.new("Host" => HOST, "Port" => PORT, "Timeout" => 10)
+        client = Net::Telnet.new("Host" => HOST, "Port" => PORT, "Timeout" => TIMEOUT)
         puts "flushed!" if client.cmd("String" => "flush_all", "Match" => /^OK/)
       rescue Errno::ECONNREFUSED
         puts "connection failed"
