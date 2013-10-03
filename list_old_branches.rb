@@ -6,7 +6,7 @@ require 'active_support/core_ext'
 require 'active_resource'
 require_relative 'redmine_config'
 
-# = developにマージされないまま10日間以上たったbranchをリスト化
+# = develop/masterにマージされないまま10日間以上たったbranchをリスト化
 module ListOldBranches
   class Issue < ActiveResource::Base
     self.site = RedmineConfig::SITE
@@ -49,10 +49,16 @@ module ListOldBranches
                             # end
         }
       }
-      # find branches that not yet merged to develop
+      # find f branches that not yet merged to develop
       not_mergeds = `cd #{d} && git branch -r --no-merged origin/develop`.
         split("\n").
         grep(%r{^\s*origin/[hf]/}).map {|b|
+        remotes.detect{|r| r.name == b.sub(%r{^\s*origin/}, "")}
+      }
+      # find h branches that not yet merged to master
+      not_mergeds.concat `cd #{d} && git branch -r --no-merged origin/master`.
+        split("\n").
+        grep(%r{^\s*origin/h/}).map {|b|
         remotes.detect{|r| r.name == b.sub(%r{^\s*origin/}, "")}
       }
 
