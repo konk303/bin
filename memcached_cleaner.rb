@@ -5,20 +5,22 @@ require 'net/telnet'
 # require 'pry'
 
 module MemcachedCleaner
-  HOST = "localhost"
+  HOSTS = ["hoge", "localhost"]
   PORT = "11211"
   TIMEOUT = 10
 
   class << self
     def clean
-      begin
-        puts "sending `flush_all` to #{HOST}:#{PORT}"
-        client = Net::Telnet.new("Host" => HOST, "Port" => PORT, "Timeout" => TIMEOUT)
-        puts "flushed!" if client.cmd("String" => "flush_all", "Match" => /^OK/)
-      rescue Errno::ECONNREFUSED
-        puts "connection failed"
-      rescue Timeout::Error
-        puts "no response"
+      HOSTS.each do |host|
+        begin
+          puts "sending `flush_all` to #{host}:#{PORT}"
+          client = Net::Telnet.new("Host" => host, "Port" => PORT, "Timeout" => TIMEOUT)
+          puts "> flushed!" if client.cmd("String" => "flush_all", "Match" => /^OK/)
+        rescue Timeout::Error
+          puts "> no response"
+        rescue
+          puts "> connection failed"
+        end
       end
     end
   end
