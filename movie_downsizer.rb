@@ -12,6 +12,7 @@ class MovieDownSizer
 
   EXTS = %w(avi wmv mov 3gp mp4 ts mpg mpeg mp4v m4v 3gp2 3gpp 3gs mts mp4 m2ts swf).freeze
   FILESIZE_BOUND = (300 * 1024 * 1024).freeze # 300MB
+  RESIZED_FILE_SUFFIX = '_resized'.freeze
 
   attr_accessor :dir
 
@@ -33,11 +34,11 @@ class MovieDownSizer
 
     def initialize(_file)
       @file = Pathname.new _file
-      @resized_file = file.dirname.join "#{file.basename ".*"}_resized#{file.extname}"
+      @resized_file = file.dirname.join "#{file.basename ".*"}#{RESIZED_FILE_SUFFIX}#{file.extname}"
     end
 
     def needs_converting?
-      file.size > FILESIZE_BOUND && !resized_file.exist?
+      !this_is_resized_file? && !resized_file.exist? && file.size > FILESIZE_BOUND
     end
 
     def convert!
@@ -64,6 +65,12 @@ class MovieDownSizer
         puts '---'
         puts "ERROR #{e}"
       end
+    end
+
+    private
+
+    def this_is_resized_file?
+      file.basename('.*').to_s.end_with? RESIZED_FILE_SUFFIX
     end
   end
 end
