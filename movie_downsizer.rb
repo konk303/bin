@@ -13,6 +13,7 @@ class MovieDownSizer
   EXTS = %w(avi wmv mov 3gp mp4 ts mpg mpeg mp4v m4v 3gp2 3gpp 3gs mts mp4 m2ts swf).freeze
   FILESIZE_BOUND = (300 * 1024 * 1024).freeze # 300MB
   RESIZED_FILE_SUFFIX = '_resized'.freeze
+  AUDIO_BITRATE = 32            # kbps
 
   attr_accessor :dir
 
@@ -30,7 +31,7 @@ class MovieDownSizer
 
   class EachFile
 
-    attr_accessor :file, :resized_file
+    attr_accessor :file, :resized_file, :movie
 
     def initialize(_file)
       @file = Pathname.new _file
@@ -38,25 +39,16 @@ class MovieDownSizer
     end
 
     def needs_converting?
-      !this_is_resized_file? && !resized_file.exist? && file.size > FILESIZE_BOUND
+      !resized_file.exist? && file.size > FILESIZE_BOUND
     end
 
     def convert!
+      @movie = FFMPEG::Movie.new(file)
       puts "resizing #{file} to #{resized_file}!"
       puts '---'
       begin
-        movie = FFMPEG::Movie.new(file)
         puts movie.inspect
         puts '---'
-        # TODO: more precise options
-        # FIXME: lower audio?
-        # FIXME: rotation?
-        options = {
-          audio_sample_rate: 44100,
-          audio_channels: 2,
-          custom: "-fs #{FILESIZE_BOUND}"
-        }
-
         movie.transcode(resized_file, options) { |progress| puts progress }
         resized_file.chmod 0774
         puts '---'
@@ -69,8 +61,29 @@ class MovieDownSizer
 
     private
 
-    def this_is_resized_file?
-      file.basename('.*').to_s.end_with? RESIZED_FILE_SUFFIX
+    # TODO: more precise options
+    # FIXME: lower audio?
+    # FIXME: rotation?
+    def options
+      {
+        # audio_sample_rate: 44100,
+        # audio_channels: 2,
+        audio_bitrate: AUDIO_BITRATE,
+        video_max_bitrate: new_bitrate,
+        buffer_size: new_bitrate,
+        # video_bitrate: new_bitrate,
+        # FIXME: `-fs` doesn't work as inteded. it just stops encoding when file got bigger.
+        # http://ffmpeg.gusari.org/viewtopic.php?f=11&t=2141
+       # custom: "-fs #{FILESIZE_BOUND}"
+      }
+    end
+
+    # desired bitrate, in kilobit/s
+    # see https://trac.ffmpeg.org/wiki/Encode/H.264#twopass
+    def new_bitrate
+      accepted_total_bitrate = ((FILESIZE_BOUND * 8 / movie.duration) / 1024).to_i
+      # 90% to be safe
+      ((accepted_total_bitrate - AUDIO_BITRATE) * 0.9).to_i
     end
   end
 end
