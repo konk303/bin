@@ -22,10 +22,15 @@ class MovieDownSizer
   end
 
   def convert_all!
-    # exts_for_glob = (EXTS + EXTS.map(&:upcase)).join(",")
-    Dir.glob(dir.join("**/*.{#{EXTS.join ","}}")).each do |f|
-      file = EachFile.new f
-      file.convert! if file.needs_converting?
+    # run glob twice, so too big resized file created on first is
+    #   re-resized on second run.
+    2.times do |i|
+      puts "searching files in #{dir} (#{i.succ} times)"
+      Dir.glob(dir.join("**/*.{#{EXTS.join ","}}")).each do |f|
+        file = EachFile.new f
+        file.convert! if file.needs_converting?
+      end
+      puts "finished: searching files in #{dir} (#{i.succ} times)"
     end
   end
 
